@@ -19,7 +19,6 @@
     <description>Internal database-based implementation of the Firefly IDP Adapter using R2DBC</description>
 
     <properties>
-        <java.version>21</java.version>
         <fireflyframework-idp.version>1.0.0-SNAPSHOT</fireflyframework-idp.version>
         <jjwt.version>0.12.6</jjwt.version>
     </properties>
@@ -160,12 +159,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <parameters>true</parameters>
-                    <source>21</source>
-                    <target>21</target>
-                    <release>21</release>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
