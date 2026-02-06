@@ -7,7 +7,7 @@ spring:
 
 logging:
   level:
-    com.firefly.idp.internaldb: DEBUG
+    org.fireflyframework.idp.internaldb: DEBUG
     org.springframework.r2dbc: INFO
     org.flywaydb: INFO
     org.testcontainers: INFO

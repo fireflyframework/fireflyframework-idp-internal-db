@@ -4,7 +4,7 @@ This document provides a comprehensive guide for integrating the Internal Databa
 
 ## Overview
 
-The `lib-idp-internal-db-impl` is a self-contained Identity Provider (IDP) adapter that integrates seamlessly with the `common-platform-security-center`. It provides database-backed user authentication without requiring external IDP services like Keycloak or AWS Cognito.
+The `fireflyframework-idp-internal-db-impl` is a self-contained Identity Provider (IDP) adapter that integrates seamlessly with the `common-platform-security-center`. It provides database-backed user authentication without requiring external IDP services like Keycloak or AWS Cognito.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ The `lib-idp-internal-db-impl` is a self-contained Identity Provider (IDP) adapt
 │                  │ detects provider=internal-db │
 │                  ▼                              │
 │   ┌─────────────────────────────────┐          │
-│   │  InternalDbIdpAdapter           │◄─────────┼─ lib-idp-internal-db-impl
+│   │  InternalDbIdpAdapter           │◄─────────┼─ fireflyframework-idp-internal-db-impl
 │   │  - Implements IdpAdapter        │          │
 │   │  - Handles authentication       │          │
 │   └──────────────┬──────────────────┘          │
@@ -65,15 +65,15 @@ Add both the Security Center core and the Internal DB IDP implementation to your
 <dependencies>
     <!-- Firefly Security Center Core -->
     <dependency>
-        <groupId>com.firefly</groupId>
+        <groupId>org.fireflyframework</groupId>
         <artifactId>common-platform-security-center-core</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Internal Database IDP Implementation -->
     <dependency>
-        <groupId>com.firefly</groupId>
-        <artifactId>lib-idp-internal-db-impl</artifactId>
+        <groupId>org.fireflyframework</groupId>
+        <artifactId>fireflyframework-idp-internal-db-impl</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
@@ -116,7 +116,7 @@ firefly:
           secret: ${IDP_JWT_SECRET:changeme-use-secure-secret-min-32chars!}
           
           # JWT issuer identifier
-          issuer: ${IDP_JWT_ISSUER:firefly-banking-platform}
+          issuer: ${IDP_JWT_ISSUER:firefly-framework}
           
           # Access token expiration in milliseconds (default: 15 minutes)
           access-token-expiration: 900000
@@ -194,13 +194,13 @@ The Security Center's `IdpAutoConfiguration` automatically detects and loads the
 
 ```java
 @Configuration
-@ConditionalOnClass(name = "com.firefly.idp.internaldb.adapter.InternalDbIdpAdapter")
+@ConditionalOnClass(name = "org.fireflyframework.idp.internaldb.adapter.InternalDbIdpAdapter")
 @ConditionalOnProperty(
     prefix = "firefly.security-center.idp", 
     name = "provider", 
     havingValue = "internal-db"
 )
-@ComponentScan(basePackages = "com.firefly.idp.internaldb")
+@ComponentScan(basePackages = "org.fireflyframework.idp.internaldb")
 static class InternalDbIdpConfiguration {
     public InternalDbIdpConfiguration() {
         log.info("Loading Internal Database IDP adapter configuration");
@@ -209,7 +209,7 @@ static class InternalDbIdpConfiguration {
 ```
 
 **Key Points:**
-- Auto-loads when `lib-idp-internal-db-impl` is on the classpath
+- Auto-loads when `fireflyframework-idp-internal-db-impl` is on the classpath
 - Only activates when `provider=internal-db` is configured
 - Scans and registers all internal DB IDP components
 - No manual bean configuration required
@@ -375,7 +375,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 The implementation includes comprehensive unit tests:
 
 ```bash
-cd lib-idp-internal-db-impl
+cd fireflyframework-idp-internal-db-impl
 mvn test
 ```
 
@@ -428,7 +428,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 **Cause**: Security Center cannot find the IDP adapter implementation.
 
 **Solution**:
-1. Verify `lib-idp-internal-db-impl` is in your dependencies
+1. Verify `fireflyframework-idp-internal-db-impl` is in your dependencies
 2. Check that `provider: internal-db` is set in configuration
 3. Run `mvn dependency:tree` to confirm the artifact is present
 
@@ -540,11 +540,11 @@ The migrations create these indexes for optimal performance:
 
 - **Main README**: [README.md](README.md)
 - **Security Center Docs**: `../common-platform-security-center/README.md`
-- **IDP Adapter Interface**: `../lib-idp-adapter/README.md`
+- **IDP Adapter Interface**: `../fireflyframework-idp-adapter/README.md`
 - **API Documentation**: Available via Swagger/OpenAPI when Security Center is running
 
 ## License
 
-Copyright 2025 Firefly Software Solutions Inc
+Copyright 2024-2026 Firefly Software Solutions Inc
 
 Licensed under the Apache License, Version 2.0

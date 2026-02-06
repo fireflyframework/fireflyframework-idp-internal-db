@@ -89,7 +89,7 @@ The Internal Database Identity Provider (IDP) implementation for Firefly Securit
 
 ### Maven Install
 ```
-[INFO] Installing .../lib-idp-internal-db-impl-1.0.0-SNAPSHOT.jar
+[INFO] Installing .../fireflyframework-idp-internal-db-impl-1.0.0-SNAPSHOT.jar
 [INFO] BUILD SUCCESS
 ```
 
@@ -151,7 +151,7 @@ The Internal Database Identity Provider (IDP) implementation for Firefly Securit
 
 ### Code Structure
 ```
-lib-idp-internal-db-impl/
+fireflyframework-idp-internal-db-impl/
 ├── adapter/          ✅ IdpAdapter implementation
 ├── config/           ✅ Configuration classes
 ├── domain/           ✅ JPA entities
@@ -213,13 +213,13 @@ lib-idp-internal-db-impl/
 ### Integration Points
 ```java
 @Configuration
-@ConditionalOnClass(name = "com.firefly.idp.internaldb.adapter.InternalDbIdpAdapter")
+@ConditionalOnClass(name = "org.fireflyframework.idp.internaldb.adapter.InternalDbIdpAdapter")
 @ConditionalOnProperty(
     prefix = "firefly.security-center.idp", 
     name = "provider", 
     havingValue = "internal-db"
 )
-@ComponentScan(basePackages = "com.firefly.idp.internaldb")
+@ComponentScan(basePackages = "org.fireflyframework.idp.internaldb")
 static class InternalDbIdpConfiguration {
     // Auto-configured by Security Center
 }
@@ -289,7 +289,7 @@ As documented, this implementation has some intentional limitations compared to 
 
 ### Build and Install
 ```bash
-cd lib-idp-internal-db-impl
+cd fireflyframework-idp-internal-db-impl
 mvn clean install
 ```
 **Result:** ✅ BUILD SUCCESS
@@ -317,9 +317,9 @@ mvn dependency:tree
 - [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - Technical details
 
 ### Contact
-- Project Repository: Firefly Banking Platform
+- Project Repository: Firefly Framework
 - Security Center Docs: `../common-platform-security-center/`
-- IDP Adapter Interface: `../lib-idp-adapter/`
+- IDP Adapter Interface: `../fireflyframework-idp-adapter/`
 
 ---
 

@@ -1,6 +1,6 @@
 # API Documentation - Internal Database IDP
 
-> **IMPORTANT:** This library (`lib-idp-internal-db-impl`) is an **adapter implementation** that provides the backend logic for authentication operations. It **does not expose REST endpoints directly**. The REST API endpoints documented here are exposed by the **Firefly Security Center** when this adapter is integrated. This adapter implements the `IdpAdapter` interface and handles business logic, database operations, and authentication workflows.
+> **IMPORTANT:** This library (`fireflyframework-idp-internal-db-impl`) is an **adapter implementation** that provides the backend logic for authentication operations. It **does not expose REST endpoints directly**. The REST API endpoints documented here are exposed by the **Firefly Security Center** when this adapter is integrated. This adapter implements the `IdpAdapter` interface and handles business logic, database operations, and authentication workflows.
 
 This document provides complete API documentation for the REST endpoints that become available when the Internal Database IDP adapter is integrated with the Firefly Security Center.
 
@@ -792,6 +792,6 @@ For API support and issues:
 
 ## License
 
-Copyright 2025 Firefly Software Solutions Inc
+Copyright 2024-2026 Firefly Software Solutions Inc
 
 Licensed under the Apache License, Version 2.0

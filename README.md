@@ -4,11 +4,11 @@
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
-A production-ready, self-contained Identity Provider (IDP) implementation for the Firefly Banking Platform. This adapter provides database-backed authentication and authorization using PostgreSQL, R2DBC, and JWT tokens—no external IDP services required.
+A production-ready, self-contained Identity Provider (IDP) implementation for the Firefly Framework. This adapter provides database-backed authentication and authorization using PostgreSQL, R2DBC, and JWT tokens—no external IDP services required.
 
 ## Overview
 
-The **lib-idp-internal-db-impl** is a reactive, high-performance identity provider that implements the Firefly IDP Adapter interface. It provides complete user authentication, authorization, and session management capabilities using an internal PostgreSQL database.
+The **fireflyframework-idp-internal-db-impl** is a reactive, high-performance identity provider that implements the Firefly IDP Adapter interface. It provides complete user authentication, authorization, and session management capabilities using an internal PostgreSQL database.
 
 ### Key Features
 
@@ -40,7 +40,7 @@ This internal database IDP is ideal for:
 ### Component Structure
 
 ```
-lib-idp-internal-db-impl/
+fireflyframework-idp-internal-db-impl/
 ├── adapter/
 │   └── InternalDbIdpAdapter.java      # IdpAdapter interface implementation
 ├── config/
@@ -100,8 +100,8 @@ Add the following to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-idp-internal-db-impl</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-idp-internal-db-impl</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -118,7 +118,7 @@ firefly:
       internal-db:
         jwt:
           secret: "your-very-secure-secret-key-min-256-bits-32-chars!"
-          issuer: "firefly-banking-platform"
+          issuer: "firefly-framework"
           access-token-expiration: 900000      # 15 minutes
           refresh-token-expiration: 604800000  # 7 days
 
@@ -323,11 +323,11 @@ This internal IDP implementation has some limitations compared to full-featured 
 - ❌ **No LDAP/AD**: No integration with enterprise directories
 - ❌ **Basic Session Management**: Limited session tracking features
 
-For advanced features, consider using `lib-idp-keycloak-impl` or `lib-idp-aws-cognito-impl`.
+For advanced features, consider using `fireflyframework-idp-keycloak-impl` or `fireflyframework-idp-aws-cognito-impl`.
 
 ## Adapter Implementation
 
-This library implements the `IdpAdapter` interface from `lib-idp-adapter`. It **does not expose REST endpoints directly**. Instead, it provides the backend implementation that the **Firefly Security Center** uses to handle authentication requests.
+This library implements the `IdpAdapter` interface from `fireflyframework-idp-adapter`. It **does not expose REST endpoints directly**. Instead, it provides the backend implementation that the **Firefly Security Center** uses to handle authentication requests.
 
 ### Implemented Methods
 
@@ -375,7 +375,7 @@ When integrated with the Firefly Security Center, the following REST endpoints b
 
 **Note:** The Security Center handles HTTP routing, request validation, and response serialization. This adapter focuses solely on business logic and data persistence.
 
-For detailed API documentation, see the [Security Center API Documentation](https://github.com/firefly-oss/common-platform-security-center).
+For detailed API documentation, see the [Security Center API Documentation](https://github.org/fireflyframework-oss/common-platform-security-center).
 
 ## Integration with Firefly Security Center
 
@@ -528,7 +528,7 @@ String hash = encoder.encode("password");
 ```yaml
 logging:
   level:
-    com.firefly.idp.internaldb: DEBUG
+    org.fireflyframework.idp.internaldb: DEBUG
     io.jsonwebtoken: DEBUG
 ```
 
@@ -573,17 +573,17 @@ This internal IDP has some limitations compared to enterprise IDP solutions:
 
 | Feature | Status | Alternative |
 |---------|--------|-------------|
-| Multi-Factor Authentication (MFA) | ❌ Not implemented | Use `lib-idp-keycloak-impl` |
-| OAuth2 Authorization Flows | ❌ Password grant only | Use `lib-idp-keycloak-impl` or `lib-idp-aws-cognito-impl` |
-| Social Login (Google, Facebook) | ❌ Not supported | Use `lib-idp-keycloak-impl` |
-| LDAP/Active Directory Integration | ❌ Not supported | Use `lib-idp-keycloak-impl` |
+| Multi-Factor Authentication (MFA) | ❌ Not implemented | Use `fireflyframework-idp-keycloak-impl` |
+| OAuth2 Authorization Flows | ❌ Password grant only | Use `fireflyframework-idp-keycloak-impl` or `fireflyframework-idp-aws-cognito-impl` |
+| Social Login (Google, Facebook) | ❌ Not supported | Use `fireflyframework-idp-keycloak-impl` |
+| LDAP/Active Directory Integration | ❌ Not supported | Use `fireflyframework-idp-keycloak-impl` |
 | Advanced Session Management | ⚠️ Basic implementation | Consider external IDP |
-| User Federation | ❌ Not supported | Use `lib-idp-keycloak-impl` |
-| Single Sign-On (SSO) | ❌ Not supported | Use `lib-idp-keycloak-impl` |
+| User Federation | ❌ Not supported | Use `fireflyframework-idp-keycloak-impl` |
+| Single Sign-On (SSO) | ❌ Not supported | Use `fireflyframework-idp-keycloak-impl` |
 
 For advanced enterprise features, consider:
-- **lib-idp-keycloak-impl**: Full OAuth2/OIDC with SSO, MFA, and federation
-- **lib-idp-aws-cognito-impl**: AWS-managed identity with advanced security features
+- **fireflyframework-idp-keycloak-impl**: Full OAuth2/OIDC with SSO, MFA, and federation
+- **fireflyframework-idp-aws-cognito-impl**: AWS-managed identity with advanced security features
 
 ## Contributing
 
@@ -607,7 +607,7 @@ We welcome contributions! To contribute:
 ## License
 
 ```
-Copyright 2025 Firefly Software Solutions Inc
+Copyright 2024-2026 Firefly Software Solutions Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -638,22 +638,22 @@ Comprehensive documentation is available in the [docs/](docs/) directory:
 
 ### Getting Help
 
-- 🐛 **Bug Reports**: [Create an issue](https://github.com/firefly-oss/lib-idp-internal-db-impl/issues)
+- 🐛 **Bug Reports**: [Create an issue](https://github.org/fireflyframework-oss/fireflyframework-idp-internal-db-impl/issues)
 - 💬 **Questions**: Use GitHub Discussions
 - 📧 **Email**: support@firefly-platform.com
 - 📚 **Documentation**: See [Firefly Platform Docs](https://docs.firefly-platform.com)
 
 ### Community
 
-- **GitHub**: [firefly-oss/lib-idp-internal-db-impl](https://github.com/firefly-oss/lib-idp-internal-db-impl)
-- **Organization**: [Firefly OSS](https://github.com/firefly-oss)
+- **GitHub**: [firefly-oss/fireflyframework-idp-internal-db-impl](https://github.org/fireflyframework-oss/fireflyframework-idp-internal-db-impl)
+- **Organization**: [Firefly OSS](https://github.org/fireflyframework-oss)
 
 ## Related Projects
 
-- **[lib-idp-adapter](https://github.com/firefly-oss/lib-idp-adapter)** - Core IDP adapter interface
-- **[common-platform-security-center](https://github.com/firefly-oss/common-platform-security-center)** - Firefly Security Center
-- **[lib-idp-keycloak-impl](https://github.com/firefly-oss/lib-idp-keycloak-impl)** - Keycloak IDP implementation
-- **[lib-idp-aws-cognito-impl](https://github.com/firefly-oss/lib-idp-aws-cognito-impl)** - AWS Cognito IDP implementation
+- **[fireflyframework-idp-adapter](https://github.org/fireflyframework-oss/fireflyframework-idp-adapter)** - Core IDP adapter interface
+- **[common-platform-security-center](https://github.org/fireflyframework-oss/common-platform-security-center)** - Firefly Security Center
+- **[fireflyframework-idp-keycloak-impl](https://github.org/fireflyframework-oss/fireflyframework-idp-keycloak-impl)** - Keycloak IDP implementation
+- **[fireflyframework-idp-aws-cognito-impl](https://github.org/fireflyframework-oss/fireflyframework-idp-aws-cognito-impl)** - AWS Cognito IDP implementation
 
 ---
 
