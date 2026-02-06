@@ -1,7 +1,7 @@
 # Firefly IDP - Internal Database Implementation
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
 A production-ready, self-contained Identity Provider (IDP) implementation for the Firefly Framework. This adapter provides database-backed authentication and authorization using PostgreSQL, R2DBC, and JWT tokens—no external IDP services required.
@@ -82,7 +82,7 @@ The implementation uses five core tables:
 
 ### Technology Stack
 
-- **Java 21**: Modern Java language features and performance
+- **Java 25**: Modern Java language features and performance (Java 21+ compatible)
 - **Spring Boot 3.x**: Enterprise application framework
 - **Spring WebFlux**: Reactive web framework for non-blocking I/O
 - **Spring Data R2DBC**: Reactive database access
@@ -440,7 +440,7 @@ mvn test -X
 
 The codebase follows enterprise Java standards:
 
-- **Java 21** language features
+- **Java 25** language features (Java 21+ compatible)
 - **Lombok** for reduced boilerplate
 - **SLF4J** for structured logging
 - **Reactive patterns** throughout
