@@ -62,12 +62,6 @@
             <artifactId>r2dbc-postgresql</artifactId>
         </dependency>
 
-        <!-- Flyway for database migrations -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
         <!-- JDBC driver for Flyway (sync operations) -->
         <dependency>
             <groupId>org.postgresql</groupId>
