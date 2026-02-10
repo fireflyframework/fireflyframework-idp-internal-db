@@ -1,5 +1,7 @@
 # Firefly IDP - Internal Database Implementation
 
+[![CI](https://github.com/fireflyframework/fireflyframework-idp-internal-db/actions/workflows/ci.yml/badge.svg)](https://github.com/fireflyframework/fireflyframework-idp-internal-db/actions/workflows/ci.yml)
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
