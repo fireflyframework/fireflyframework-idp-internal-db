@@ -54,7 +54,7 @@ This implementation is suitable for applications that need self-contained identi
 <dependency>
     <groupId>org.fireflyframework</groupId>
     <artifactId>fireflyframework-idp-internal-db</artifactId>
-    <version>26.01.01</version>
+    <version>26.02.01</version>
 </dependency>
 ```
 
