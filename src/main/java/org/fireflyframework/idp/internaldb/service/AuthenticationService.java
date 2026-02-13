@@ -28,7 +28,6 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -39,7 +38,6 @@ import java.util.UUID;
 /**
  * Service for authentication operations including login, token refresh, and logout.
  */
-@Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationService {

@@ -28,9 +28,8 @@ import org.springframework.validation.annotation.Validated;
  * <p>Configuration Example:</p>
  * <pre>
  * firefly:
- *   security-center:
- *     idp:
- *       internal-db:
+ *   idp:
+ *     internal-db:
  *         jwt:
  *           secret: your-secret-key-min-256-bits
  *           issuer: firefly-idp
@@ -40,7 +39,7 @@ import org.springframework.validation.annotation.Validated;
  */
 @Data
 @Validated
-@ConfigurationProperties(prefix = "firefly.security-center.idp.internal-db")
+@ConfigurationProperties(prefix = "firefly.idp.internal-db")
 public class InternalDbProperties {
 
     /**

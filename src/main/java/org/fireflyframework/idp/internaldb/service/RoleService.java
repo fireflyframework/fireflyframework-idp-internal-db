@@ -22,7 +22,6 @@ import org.fireflyframework.idp.internaldb.repository.RoleRepository;
 import org.fireflyframework.idp.internaldb.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -33,7 +32,6 @@ import java.util.UUID;
 /**
  * Service for role management operations.
  */
-@Service
 @RequiredArgsConstructor
 @Slf4j
 public class RoleService {
