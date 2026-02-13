@@ -103,31 +103,17 @@ public class AuthenticationService {
                     user.setFailedLoginAttempts(0);
                     user.setLockedUntil(null);
 
-                    // Check if MFA is enabled — if so, return partial response
-                    if (user.getMfaEnabled() != null && user.getMfaEnabled()) {
-                        user.setLastLoginAt(LocalDateTime.now());
-                        return userRepository.save(user)
-                                .thenReturn(TokenResponse.builder()
-                                        .mfaRequired(true)
-                                        .mfaUserId(user.getId().toString())
-                                        .build());
-                    }
-
                     return generateTokens(user);
                 })
-                .flatMap(tokenResponse -> {
-                    // Update last login time (skip if MFA required — already saved above)
-                    if (tokenResponse.isMfaRequired()) {
-                        return Mono.just(tokenResponse);
-                    }
-                    return userRepository.findByUsername(username)
+                .flatMap(tokenResponse ->
+                    userRepository.findByUsername(username)
                             .doOnNext(user -> user.markAsNotNew())
                             .flatMap(user -> {
                                 user.setLastLoginAt(LocalDateTime.now());
                                 return userRepository.save(user);
                             })
-                            .thenReturn(tokenResponse);
-                });
+                            .thenReturn(tokenResponse)
+                );
     }
 
     /**
