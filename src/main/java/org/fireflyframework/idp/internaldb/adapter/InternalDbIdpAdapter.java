@@ -208,35 +208,6 @@ public class InternalDbIdpAdapter implements IdpAdapter {
     }
 
     @Override
-    public Mono<ResponseEntity<CreateUserResponse>> registerUser(RegisterUserRequest request) {
-        log.debug("Self-service registration for user: {}", request.getUsername());
-
-        CreateUserRequest createRequest = CreateUserRequest.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .givenName(request.getFirstName())
-                .familyName(request.getLastName())
-                .build();
-
-        return userManagementService.createUser(createRequest)
-                .map(user -> {
-                    CreateUserResponse response = CreateUserResponse.builder()
-                            .id(user.getId().toString())
-                            .username(user.getUsername())
-                            .email(user.getEmail())
-                            .createdAt(user.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant())
-                            .build();
-                    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-                })
-                .onErrorResume(e -> {
-                    log.error("Self-service registration failed for user {}: {}", request.getUsername(), e.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(CreateUserResponse.builder().build()));
-                });
-    }
-
-    @Override
     public Mono<Void> changePassword(ChangePasswordRequest request) {
         log.debug("Change password request for user: {}", request.getUserId());
 
