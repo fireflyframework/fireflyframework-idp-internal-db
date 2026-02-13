@@ -7,6 +7,7 @@ import org.fireflyframework.idp.internaldb.repository.RefreshTokenRepository;
 import org.fireflyframework.idp.internaldb.repository.SessionRepository;
 import org.fireflyframework.idp.internaldb.repository.UserRepository;
 import org.fireflyframework.idp.internaldb.repository.UserRoleRepository;
+import org.fireflyframework.idp.internaldb.service.PasswordPolicyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,9 @@ class UserManagementServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private PasswordPolicyService passwordPolicyService;
 
     @InjectMocks
     private UserManagementService userManagementService;

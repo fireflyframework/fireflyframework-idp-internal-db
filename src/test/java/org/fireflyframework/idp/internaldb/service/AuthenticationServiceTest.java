@@ -80,6 +80,9 @@ class AuthenticationServiceTest {
         jwtProperties.setAccessTokenExpiration(900000L); // 15 minutes
         jwtProperties.setRefreshTokenExpiration(604800000L); // 7 days
         lenient().when(properties.getJwt()).thenReturn(jwtProperties);
+
+        InternalDbProperties.LockoutConfig lockoutConfig = new InternalDbProperties.LockoutConfig();
+        lenient().when(properties.getLockout()).thenReturn(lockoutConfig);
     }
 
     @Test
@@ -124,6 +127,7 @@ class AuthenticationServiceTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Mono.just(testUser));
         when(passwordEncoder.matches(password, testUser.getPasswordHash())).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(testUser));
 
         // When & Then
         StepVerifier.create(authenticationService.authenticate(username, password))

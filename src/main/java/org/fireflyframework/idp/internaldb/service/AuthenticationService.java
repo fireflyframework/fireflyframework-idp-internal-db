@@ -53,6 +53,15 @@ public class AuthenticationService {
     /**
      * Authenticate a user with username and password.
      *
+     * <p>Authentication pipeline:
+     * <ol>
+     *   <li>Find user by username</li>
+     *   <li>Check if account is enabled</li>
+     *   <li>Check automatic lockout (lockedUntil) and manual lock (accountNonLocked)</li>
+     *   <li>Verify password — on failure, increment failed attempts and lock if threshold reached</li>
+     *   <li>On success, reset failed attempts and generate tokens</li>
+     * </ol>
+     *
      * @param username the username
      * @param password the password
      * @return a Mono emitting the token response
@@ -67,16 +76,50 @@ public class AuthenticationService {
                     if (!user.getEnabled()) {
                         return Mono.error(new RuntimeException("User account is disabled"));
                     }
+
+                    // Check manual lock
                     if (!user.getAccountNonLocked()) {
                         return Mono.error(new RuntimeException("User account is locked"));
                     }
-                    if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-                        return Mono.error(new RuntimeException("Invalid username or password"));
+
+                    // Check automatic lockout
+                    if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
+                        log.warn("Login attempt for locked user: {} (locked until {})", username, user.getLockedUntil());
+                        return Mono.error(new RuntimeException("Account is temporarily locked. Try again later."));
                     }
+
+                    // Clear expired lockout
+                    if (user.getLockedUntil() != null && user.getLockedUntil().isBefore(LocalDateTime.now())) {
+                        user.setLockedUntil(null);
+                        user.setFailedLoginAttempts(0);
+                    }
+
+                    // Verify password
+                    if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+                        return handleFailedLogin(user);
+                    }
+
+                    // Password correct — reset failed attempts
+                    user.setFailedLoginAttempts(0);
+                    user.setLockedUntil(null);
+
+                    // Check if MFA is enabled — if so, return partial response
+                    if (user.getMfaEnabled() != null && user.getMfaEnabled()) {
+                        user.setLastLoginAt(LocalDateTime.now());
+                        return userRepository.save(user)
+                                .thenReturn(TokenResponse.builder()
+                                        .mfaRequired(true)
+                                        .mfaUserId(user.getId().toString())
+                                        .build());
+                    }
+
                     return generateTokens(user);
                 })
                 .flatMap(tokenResponse -> {
-                    // Update last login time
+                    // Update last login time (skip if MFA required — already saved above)
+                    if (tokenResponse.isMfaRequired()) {
+                        return Mono.just(tokenResponse);
+                    }
                     return userRepository.findByUsername(username)
                             .doOnNext(user -> user.markAsNotNew())
                             .flatMap(user -> {
@@ -85,6 +128,25 @@ public class AuthenticationService {
                             })
                             .thenReturn(tokenResponse);
                 });
+    }
+
+    /**
+     * Handles a failed login attempt by incrementing the counter and locking if threshold is reached.
+     */
+    private Mono<TokenResponse> handleFailedLogin(User user) {
+        int attempts = (user.getFailedLoginAttempts() != null ? user.getFailedLoginAttempts() : 0) + 1;
+        user.setFailedLoginAttempts(attempts);
+
+        int maxAttempts = properties.getLockout().getMaxFailedAttempts();
+        if (attempts >= maxAttempts) {
+            LocalDateTime lockUntil = LocalDateTime.now().plus(properties.getLockout().getLockoutDuration());
+            user.setLockedUntil(lockUntil);
+            log.warn("Account locked for user: {} after {} failed attempts (locked until {})",
+                    user.getUsername(), attempts, lockUntil);
+        }
+
+        return userRepository.save(user)
+                .then(Mono.error(new RuntimeException("Invalid username or password")));
     }
 
     /**

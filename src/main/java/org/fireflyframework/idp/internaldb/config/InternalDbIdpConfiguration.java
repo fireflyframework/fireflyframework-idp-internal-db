@@ -20,15 +20,8 @@ import io.r2dbc.spi.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.fireflyframework.idp.adapter.IdpAdapter;
 import org.fireflyframework.idp.internaldb.adapter.InternalDbIdpAdapter;
-import org.fireflyframework.idp.internaldb.repository.RefreshTokenRepository;
-import org.fireflyframework.idp.internaldb.repository.RoleRepository;
-import org.fireflyframework.idp.internaldb.repository.SessionRepository;
-import org.fireflyframework.idp.internaldb.repository.UserRepository;
-import org.fireflyframework.idp.internaldb.repository.UserRoleRepository;
-import org.fireflyframework.idp.internaldb.service.AuthenticationService;
-import org.fireflyframework.idp.internaldb.service.JwtTokenService;
-import org.fireflyframework.idp.internaldb.service.RoleService;
-import org.fireflyframework.idp.internaldb.service.UserManagementService;
+import org.fireflyframework.idp.internaldb.repository.*;
+import org.fireflyframework.idp.internaldb.service.*;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -117,9 +110,10 @@ public class InternalDbIdpConfiguration {
                                                        UserRoleRepository userRoleRepository,
                                                        SessionRepository sessionRepository,
                                                        RefreshTokenRepository refreshTokenRepository,
-                                                       PasswordEncoder passwordEncoder) {
+                                                       PasswordEncoder passwordEncoder,
+                                                       PasswordPolicyService passwordPolicyService) {
         return new UserManagementService(userRepository, userRoleRepository, sessionRepository,
-                refreshTokenRepository, passwordEncoder);
+                refreshTokenRepository, passwordEncoder, passwordPolicyService);
     }
 
     /**
@@ -148,14 +142,44 @@ public class InternalDbIdpConfiguration {
     }
 
     /**
+     * Configure password reset service.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public PasswordResetService passwordResetService(UserRepository userRepository,
+                                                      PasswordResetTokenRepository tokenRepository,
+                                                      UserManagementService userManagementService,
+                                                      PasswordEncoder passwordEncoder,
+                                                      InternalDbProperties properties) {
+        return new PasswordResetService(userRepository, tokenRepository, userManagementService,
+                passwordEncoder, properties);
+    }
+
+    /**
+     * Configure password policy service.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public PasswordPolicyService passwordPolicyService(InternalDbProperties properties) {
+        log.info("Configuring Password Policy Service (min length: {}, require uppercase: {}, require digit: {})",
+                properties.getPasswordPolicy().getMinLength(),
+                properties.getPasswordPolicy().isRequireUppercase(),
+                properties.getPasswordPolicy().isRequireDigit());
+        return new PasswordPolicyService(properties);
+    }
+
+    /**
+     * Configure MFA (TOTP) service.
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public MfaService mfaService(UserRepository userRepository, InternalDbProperties properties) {
+        log.info("Configuring TOTP MFA Service (available: {})", properties.getMfa().isAvailable());
+        return new MfaService(userRepository, properties);
+    }
+
+    /**
      * Configure the Internal DB IDP adapter as the IdpAdapter implementation.
-     *
-     * @param authenticationService the authentication service
-     * @param userManagementService the user management service
-     * @param roleService the role service
-     * @param sessionRepository the session repository
-     * @param jwtTokenService the JWT token service
-     * @return the IDP adapter bean
      */
     @Bean
     @ConditionalOnMissingBean(IdpAdapter.class)
@@ -163,8 +187,10 @@ public class InternalDbIdpConfiguration {
                                            UserManagementService userManagementService,
                                            RoleService roleService,
                                            SessionRepository sessionRepository,
-                                           JwtTokenService jwtTokenService) {
+                                           JwtTokenService jwtTokenService,
+                                           PasswordResetService passwordResetService,
+                                           MfaService mfaService) {
         return new InternalDbIdpAdapter(authenticationService, userManagementService,
-                roleService, sessionRepository, jwtTokenService);
+                roleService, sessionRepository, jwtTokenService, passwordResetService, mfaService);
     }
 }

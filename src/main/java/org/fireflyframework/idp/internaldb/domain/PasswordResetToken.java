@@ -30,81 +30,40 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * User entity for internal database IDP implementation.
- * Represents a user account with authentication credentials and profile information.
+ * Entity representing a password reset token.
+ * Tokens are stored as SHA-256 hashes for security.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("idp_users")
-public class User implements Persistable<UUID> {
+@Table("idp_password_reset_tokens")
+public class PasswordResetToken implements Persistable<UUID> {
 
     @Id
     @Column("id")
     private UUID id;
 
-    @Column("username")
-    private String username;
+    @Column("user_id")
+    private UUID userId;
 
-    @Column("email")
-    private String email;
+    @Column("token_hash")
+    private String tokenHash;
 
-    @Column("password_hash")
-    private String passwordHash;
+    @Column("expires_at")
+    private LocalDateTime expiresAt;
 
-    @Column("first_name")
-    private String firstName;
-
-    @Column("last_name")
-    private String lastName;
-
-    @Column("enabled")
-    @Builder.Default
-    private Boolean enabled = true;
-
-    @Column("account_non_expired")
-    @Builder.Default
-    private Boolean accountNonExpired = true;
-
-    @Column("account_non_locked")
-    @Builder.Default
-    private Boolean accountNonLocked = true;
-
-    @Column("credentials_non_expired")
-    @Builder.Default
-    private Boolean credentialsNonExpired = true;
-
-    @Column("mfa_enabled")
-    @Builder.Default
-    private Boolean mfaEnabled = false;
-
-    @Column("mfa_secret")
-    private String mfaSecret;
+    @Column("used")
+    private boolean used;
 
     @Column("created_at")
     private LocalDateTime createdAt;
-
-    @Column("updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column("last_login_at")
-    private LocalDateTime lastLoginAt;
-
-    @Column("failed_login_attempts")
-    @Builder.Default
-    private Integer failedLoginAttempts = 0;
-
-    @Column("locked_until")
-    private LocalDateTime lockedUntil;
 
     @Transient
     private Boolean isNewEntity;
 
     @Override
     public boolean isNew() {
-        // If explicitly set to false, it's not new
-        // Otherwise (null or true), it's new
         return isNewEntity == null || isNewEntity;
     }
 

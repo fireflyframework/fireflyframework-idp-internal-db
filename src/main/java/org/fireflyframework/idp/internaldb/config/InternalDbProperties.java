@@ -22,6 +22,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Duration;
+
 /**
  * Configuration properties for Internal Database IDP implementation.
  *
@@ -47,6 +49,26 @@ public class InternalDbProperties {
      */
     @NotNull
     private JwtConfig jwt = new JwtConfig();
+
+    /**
+     * Password reset configuration
+     */
+    private PasswordResetConfig passwordReset = new PasswordResetConfig();
+
+    /**
+     * Account lockout configuration
+     */
+    private LockoutConfig lockout = new LockoutConfig();
+
+    /**
+     * Password policy configuration
+     */
+    private PasswordPolicyConfig passwordPolicy = new PasswordPolicyConfig();
+
+    /**
+     * MFA configuration
+     */
+    private MfaConfig mfa = new MfaConfig();
 
     @Data
     public static class JwtConfig {
@@ -74,5 +96,67 @@ public class InternalDbProperties {
          * Default: 7 days
          */
         private Long refreshTokenExpiration = 604800000L;
+    }
+
+    @Data
+    public static class PasswordResetConfig {
+        /**
+         * Token expiry duration. Default: 1 hour.
+         */
+        private Duration tokenExpiry = Duration.ofHours(1);
+    }
+
+    @Data
+    public static class LockoutConfig {
+        /**
+         * Maximum failed login attempts before account lockout.
+         */
+        private int maxFailedAttempts = 5;
+
+        /**
+         * Duration of account lockout. Default: 30 minutes.
+         */
+        private Duration lockoutDuration = Duration.ofMinutes(30);
+    }
+
+    @Data
+    public static class PasswordPolicyConfig {
+        /**
+         * Minimum password length.
+         */
+        private int minLength = 8;
+
+        /**
+         * Maximum password length (0 = unlimited).
+         */
+        private int maxLength = 128;
+
+        /**
+         * Require at least one uppercase letter.
+         */
+        private boolean requireUppercase = true;
+
+        /**
+         * Require at least one lowercase letter.
+         */
+        private boolean requireLowercase = true;
+
+        /**
+         * Require at least one digit.
+         */
+        private boolean requireDigit = true;
+
+        /**
+         * Require at least one special character.
+         */
+        private boolean requireSpecialChar = false;
+    }
+
+    @Data
+    public static class MfaConfig {
+        /**
+         * Whether MFA is available for users to enable.
+         */
+        private boolean available = true;
     }
 }
