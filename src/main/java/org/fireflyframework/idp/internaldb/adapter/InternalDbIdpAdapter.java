@@ -63,6 +63,8 @@ public class InternalDbIdpAdapter implements IdpAdapter {
     private final RoleService roleService;
     private final SessionRepository sessionRepository;
     private final JwtTokenService jwtTokenService;
+    private final PasswordResetService passwordResetService;
+    private final MfaService mfaService;
 
     @Override
     public Mono<ResponseEntity<TokenResponse>> login(LoginRequest request) {
@@ -225,14 +227,10 @@ public class InternalDbIdpAdapter implements IdpAdapter {
     public Mono<Void> resetPassword(String username) {
         log.debug("Reset password request for user: {}", username);
 
-        // Generate a temporary password (in production, this should send an email)
-        String tempPassword = UUID.randomUUID().toString().substring(0, 12);
-        
-        return userManagementService.resetPassword(username, tempPassword)
-                .doOnSuccess(v -> log.info("Password reset for user {}. Temp password: {}", 
-                        username, tempPassword))
+        return passwordResetService.initiateReset(username)
+                .doOnSuccess(v -> log.info("Password reset initiated for user: {}", username))
                 .onErrorResume(e -> {
-                    log.error("Reset password failed: {}", e.getMessage());
+                    log.error("Reset password failed for user {}: {}", username, e.getMessage());
                     return Mono.error(e);
                 });
     }
@@ -240,18 +238,43 @@ public class InternalDbIdpAdapter implements IdpAdapter {
     @Override
     public Mono<ResponseEntity<MfaChallengeResponse>> mfaChallenge(String username) {
         log.debug("MFA challenge request for user: {}", username);
-        
-        // MFA not implemented in basic version
-        return Mono.just(ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                .body(MfaChallengeResponse.builder().build()));
+
+        return mfaService.isMfaEnabled(username)
+                .flatMap(enabled -> {
+                    if (!enabled) {
+                        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body(MfaChallengeResponse.builder()
+                                        .deliveryMethod("NONE")
+                                        .build()));
+                    }
+
+                    MfaChallengeResponse response = MfaChallengeResponse.builder()
+                            .challengeId(UUID.randomUUID().toString())
+                            .deliveryMethod("TOTP")
+                            .destination("Authenticator App")
+                            .expiresAt(java.time.Instant.now().plusSeconds(300))
+                            .build();
+
+                    return Mono.just(ResponseEntity.ok(response));
+                });
     }
 
     @Override
     public Mono<Void> mfaVerify(MfaVerifyRequest request) {
-        log.debug("MFA verify request");
-        
-        // MFA not implemented in basic version
-        return Mono.error(new UnsupportedOperationException("MFA not implemented"));
+        log.debug("MFA verify request for user: {}", request.getUserId());
+
+        if (request.getUserId() == null || request.getCode() == null) {
+            return Mono.error(new IllegalArgumentException("User ID and code are required"));
+        }
+
+        UUID userId = UUID.fromString(request.getUserId());
+        return mfaService.verifyTotp(userId, request.getCode())
+                .flatMap(valid -> {
+                    if (!valid) {
+                        return Mono.error(new RuntimeException("Invalid MFA code"));
+                    }
+                    return Mono.empty();
+                });
     }
 
     @Override

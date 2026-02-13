@@ -43,6 +43,7 @@ public class UserManagementService {
     private final SessionRepository sessionRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordPolicyService passwordPolicyService;
 
     /**
      * Create a new user.
@@ -74,6 +75,8 @@ public class UserManagementService {
     }
 
     private Mono<User> createUserEntity(CreateUserRequest request) {
+        passwordPolicyService.validateOrThrow(request.getPassword());
+
         LocalDateTime now = LocalDateTime.now();
         User user = User.builder()
                 .id(UUID.randomUUID())
@@ -190,6 +193,7 @@ public class UserManagementService {
                         return Mono.error(new RuntimeException("Invalid old password"));
                     }
 
+                    passwordPolicyService.validateOrThrow(newPassword);
                     user.setPasswordHash(passwordEncoder.encode(newPassword));
                     user.setUpdatedAt(LocalDateTime.now());
 
@@ -211,6 +215,7 @@ public class UserManagementService {
                 .doOnNext(user -> user.markAsNotNew())
                 .switchIfEmpty(Mono.error(new RuntimeException("User not found")))
                 .flatMap(user -> {
+                    passwordPolicyService.validateOrThrow(newPassword);
                     user.setPasswordHash(passwordEncoder.encode(newPassword));
                     user.setUpdatedAt(LocalDateTime.now());
                     return userRepository.save(user).then();
